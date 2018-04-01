@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A8D0AD6AF25BF97A6F3393D /* libPods-SocketDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 605D6E83BE5A5C5DFAD3767A /* libPods-SocketDemo.a */; };
+		8E7C5C332070E44300B9C1DF /* SocketMessageTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E7C5C322070E44300B9C1DF /* SocketMessageTool.m */; };
 		B9611AF81E6B2B1A002C691E /* ServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B9611AF71E6B2B1A002C691E /* ServerViewController.m */; };
 		B9611AFB1E6B2CD7002C691E /* ClientTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B9611AFA1E6B2CD7002C691E /* ClientTableViewController.m */; };
 		B967BCDF1E6522970051EE70 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B967BCDE1E6522970051EE70 /* main.m */; };
@@ -39,6 +40,8 @@
 /* Begin PBXFileReference section */
 		1C842872E5CFC53AC155A094 /* Pods-SocketDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SocketDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-SocketDemo/Pods-SocketDemo.release.xcconfig"; sourceTree = "<group>"; };
 		605D6E83BE5A5C5DFAD3767A /* libPods-SocketDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SocketDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E7C5C312070E44300B9C1DF /* SocketMessageTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SocketMessageTool.h; sourceTree = "<group>"; };
+		8E7C5C322070E44300B9C1DF /* SocketMessageTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SocketMessageTool.m; sourceTree = "<group>"; };
 		942EA1C93486F26D206875E1 /* Pods-SocketDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SocketDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SocketDemo/Pods-SocketDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		B9611AF61E6B2B19002C691E /* ServerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerViewController.h; sourceTree = "<group>"; };
 		B9611AF71E6B2B1A002C691E /* ServerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerViewController.m; sourceTree = "<group>"; };
@@ -130,6 +133,8 @@
 				B967BCEB1E6522970051EE70 /* LaunchScreen.storyboard */,
 				B967BCEE1E6522970051EE70 /* Info.plist */,
 				B967BCDD1E6522970051EE70 /* Supporting Files */,
+				8E7C5C312070E44300B9C1DF /* SocketMessageTool.h */,
+				8E7C5C322070E44300B9C1DF /* SocketMessageTool.m */,
 			);
 			path = SocketDemo;
 			sourceTree = "<group>";
@@ -359,6 +364,7 @@
 			files = (
 				B9611AFB1E6B2CD7002C691E /* ClientTableViewController.m in Sources */,
 				B967BCE21E6522970051EE70 /* AppDelegate.m in Sources */,
+				8E7C5C332070E44300B9C1DF /* SocketMessageTool.m in Sources */,
 				B967BCDF1E6522970051EE70 /* main.m in Sources */,
 				B9611AF81E6B2B1A002C691E /* ServerViewController.m in Sources */,
 			);

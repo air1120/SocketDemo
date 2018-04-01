@@ -7,9 +7,12 @@
 //
 
 #import "ServerViewController.h"
+#import "SocketMessageTool.h"
 // 使用CocoPods使用<>, 可以指定路径
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
-@interface ServerViewController ()<GCDAsyncSocketDelegate>
+@interface ServerViewController ()<GCDAsyncSocketDelegate>{
+    NSDictionary *currentDic;
+}
 
 @property (weak, nonatomic) IBOutlet UITextField *portTF;
 @property (weak, nonatomic) IBOutlet UITextView *message; // 多行文本输入框
@@ -51,18 +54,25 @@
 // 发送
 - (IBAction)sendMessage:(UIButton *)sender
 {
-    NSData *data = [self.content.text dataUsingEncoding:NSUTF8StringEncoding];
-    [self.clientSocket writeData:data withTimeout:-1 tag:0];
+    
+    NSData *mutableDate = [SocketMessageTool dataForMessage:self.content.text];
+    [self.clientSocket writeData:mutableDate withTimeout:-1 tag:0];
+    [self.clientSocket writeData:mutableDate withTimeout:-1 tag:0];
+    [self.clientSocket writeData:mutableDate withTimeout:-1 tag:0];
+    [self.clientSocket writeData:mutableDate withTimeout:-1 tag:0];
+    [self.clientSocket writeData:mutableDate withTimeout:-1 tag:0];
     
     //确认一下
 //    [self.clientSocket readDataWithTimeout:-1 tag:0];
 //    [socket.mySocket readDataWithTimeout:-1 tag:0];
 }
 
-// 接收消息
-- (IBAction)receiveMassage:(UIButton *)sender
+
+// 断开链接
+- (IBAction)disconnectSocket:(UIButton *)sender
 {
-    [self.clientSocket readDataWithTimeout:-1 tag:0];
+    [self.clientSocket disconnect];
+    self.clientSocket = nil;
 }
 
 
@@ -92,12 +102,16 @@
     
     // 存储新的端口号
     self.clientSocket = newSocket;
+    [newSocket readDataToData:[GCDAsyncSocket CRLFData] withTimeout:-1 tag:0];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
-    NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [self addText:message];
+    [SocketMessageTool socket:sock didReadData:data withTag:tag currentHead:&currentDic callback:^(NSString *content){
+        NSLog(@"content--------%@",content);
+        [self addText:content];
+//        [self addText:content];
+    }];
 }
 
 @end

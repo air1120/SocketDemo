@@ -8,12 +8,29 @@
 
 #import "ClientTableViewController.h"
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
+#import "SocketMessageTool.h"
+typedef enum{
+    SocketOfflineTypeByServer,// 服务器掉线，默认为0
+    SocketOfflineTypeByUser,  // 用户主动cut
+}SocketOfflineType;
 
-@interface ClientTableViewController ()<GCDAsyncSocketDelegate>
+@interface ClientTableViewController ()<GCDAsyncSocketDelegate>{
+    SocketOfflineType offlineType;
+    NSDictionary  *currentDic;
+}
+
+/**
+ * 当前头信息
+ **/
+//@property (nonatomic, assign) NSDictionary  *currentDic;
 
 @property (weak, nonatomic) IBOutlet UITextField *addressTF;
 @property (weak, nonatomic) IBOutlet UITextField *portTF;
 @property (weak, nonatomic) IBOutlet UITextField *message;
+/**
+ * 心跳计时器
+ **/
+@property (nonatomic, strong) NSTimer *connectTimer;
 
 @property (weak, nonatomic) IBOutlet UITextView *content;
 
@@ -49,15 +66,17 @@
 }
 
 // 接收数据
-- (IBAction)receiveMassage:(UIButton *)sender
+- (IBAction)disconnectSocketByUser:(UIButton *)sender
 {
-    [self.socket readDataWithTimeout:-1 tag:0];
+    offlineType = SocketOfflineTypeByUser;
+    [self.socket disconnect];
 }
 
 // 发送消息
 - (IBAction)sendMassage:(UIButton *)sender
 {
-    [self.socket writeData:[self.message.text dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+    
+    [self.socket writeData:[SocketMessageTool dataForMessage:self.message.text] withTimeout:-1 tag:0];
 }
 
 
@@ -79,68 +98,38 @@
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
 {
     [self addText:[NSString stringWithFormat:@"链接服务器%@", host]];
+    self.socket = sock;
+    [self.socket readDataToData:[GCDAsyncSocket CRLFData] withTimeout:-1 tag:0];
     
 }
-
+- (void)createConnectTimer{
+    __weak typeof(self) weakSelf = self;
+    
+    self.connectTimer = [NSTimer scheduledTimerWithTimeInterval:10 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        [weakSelf.socket writeData:[SocketMessageTool dataForMessage:@""] withTimeout:-1 tag:0];
+    }];
+}
 // 客户端已经获取到内容
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
-    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [self addText:content];
-    [self.socket readDataWithTimeout:-1 tag:0];
+//    NSDictionary *dic = currentDic;
+    [SocketMessageTool socket:sock didReadData:data withTag:tag currentHead:&currentDic callback:^(NSString *content){
+       NSLog(@"content--------%@",content);
+        [self addText:content];
+    }];
 }
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(nullable NSError *)err{
+    NSLog(@"socket断开原因：%@",err);
+    if (offlineType == SocketOfflineTypeByServer) {
+        NSString *tip = @"正在进行重新链接...";
+        NSLog(@"%@",tip);
+        [self addText:tip];
+        [self connect:nil];
+    } else if(offlineType == SocketOfflineTypeByUser){
+        NSString *tip = @"用户自己断开，不进行自动重连";
+        NSLog(@"%@",tip);
+        [self addText:tip];
+    }
     
-    // Configure the cell...
-    
-    return cell;
 }
-*/
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 @end
